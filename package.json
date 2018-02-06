@@ -34,6 +34,10 @@
     "moment": "2.20.1",
     "pretty-bytes": "4.0.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/penggy/pack"
+  },
   "pack": {
     "pattern": "**",
     "options": {
