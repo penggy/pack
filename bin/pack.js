@@ -66,9 +66,9 @@ function doArchive() {
         })
     }
     for(var _glob of globs) {
-        archive.glob(_glob.pattern, Object.assign({}, _glob.options, {
+        archive.glob(_glob.pattern, Object.assign({
             cwd: process.cwd()
-        }), {
+        }, _glob.options), {
             prefix: archiveName
         })
     }
