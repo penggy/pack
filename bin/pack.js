@@ -21,8 +21,14 @@ var buildTime = moment().format('YYMMDDHHmm');
 var archiveName = `${package.name}-${package.version}-${buildTime}`;
 archiveName = archiveName.replace(/\//g,"-");
 
-function doArchive() {
-    switch (program.format) {
+function doArchive(format = 'zip') {
+    if(fs.existsSync(path.resolve(process.cwd(), "bin/node"))) {
+        console.log('copy node bin...');
+        fs.copySync(path.resolve(process.cwd(), "bin/node"), path.resolve(process.cwd(), "node_modules/.bin/node"));
+        fs.copySync(path.resolve(process.cwd(), "bin/node.exe"), path.resolve(process.cwd(), "node_modules/.bin/node.exe"));
+        console.log('copy node bin done');
+    }    
+    switch (format) {
         case 'zip':
             var output = fs.createWriteStream(path.resolve(process.cwd(), `${archiveName}.zip`));
             var archive = archiver('zip', { zlib: { level: 9 } })
@@ -72,14 +78,14 @@ function doArchive() {
             prefix: archiveName
         })
     }
-    console.log(`do ${program.format} ...`);
+    console.log(`do ${format} ...`);
     archive.finalize();
 }
 
 program.version(require(path.resolve(__dirname, "../package.json")).version)
-    .option('-F, --format [tar,zip]', 'archive format [tar]', 'tar')
+    // .option('-F, --format [tar,zip]', 'archive format [tar]', 'tar')
 
-program.command('clean').action(function () {
+program.command('clean').description('clean *.zip,*.tar.gz').action(function () {
     var files = glob.sync("{*.zip,*.tar.gz}", {
         cwd: process.cwd(),
         dot: true,
@@ -89,22 +95,31 @@ program.command('clean').action(function () {
         console.log(`remove file [${file}]`);
         fs.removeSync(file);
     }
+    fs.removeSync(path.resolve(process.cwd(), "node_modules/.bin/node"));
+    fs.removeSync(path.resolve(process.cwd(), "node_modules/.bin/node.exe"));
     console.log('clean done.');
     process.exit();
 })
 
-program.command('*', '', {
+program.command('zip').description('make zip archive').action(function() {
+    doArchive('zip');
+})
+
+program.command('tar').description('make tar archive').action(function() {
+    doArchive('tar');
+})
+
+program.command('*', {
     noHelp: true
 }).action(function () {
-    program.help();
+    program.outputHelp();
 })
 
 program.parse(process.argv);
 
-doArchive();
-
-
-
+if(program.args.length == 0) {
+    program.help();
+}
 
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@penggy/pack",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "pack your nodejs project",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,7 @@
   "license": "ISC",
   "dependencies": {
     "archiver": "2.1.1",
-    "commander": "2.14.0",
+    "commander": "2.15.0",
     "fs-extra": "5.0.0",
     "glob": "7.1.2",
     "moment": "2.20.1",
@@ -42,7 +42,12 @@
     "pattern": "**",
     "options": {
       "dot": false,
-      "ignore": ["node_modules/**", "*.log", "*.tar.gz", "*.zip"]
+      "ignore": [
+        "node_modules/**",
+        "*.log",
+        "*.tar.gz",
+        "*.zip"
+      ]
     }
   }
 }

@@ -15,17 +15,16 @@ npm i -g @penggy/pack
 ```shell
   Usage: pack [options] [command]
 
-
   Options:
 
-    -V, --version           output the version number
-    -F, --format [tar,zip]  archive format [tar] (default: tar)
-    -h, --help              output usage information
-
+    -V, --version  output the version number
+    -h, --help     output usage information
 
   Commands:
 
-    clean
+    clean          clean *.zip,*.tar.gz
+    zip            make zip archive
+    tar            make tar archive
 
 ```
 
