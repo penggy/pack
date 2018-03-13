@@ -25,9 +25,13 @@ function doArchive(format = 'zip') {
     if(fs.existsSync(path.resolve(process.cwd(), "bin/node"))) {
         console.log('copy node bin...');
         fs.copySync(path.resolve(process.cwd(), "bin/node"), path.resolve(process.cwd(), "node_modules/.bin/node"));
-        fs.copySync(path.resolve(process.cwd(), "bin/node.exe"), path.resolve(process.cwd(), "node_modules/.bin/node.exe"));
         console.log('copy node bin done');
-    }    
+    }   
+    if(fs.existsSync(path.resolve(process.cwd(), "bin/node.exe"))) {
+        console.log('copy node.exe bin...');
+        fs.copySync(path.resolve(process.cwd(), "bin/node.exe"), path.resolve(process.cwd(), "node_modules/.bin/node.exe"));
+        console.log('copy node.exe bin done');
+    }   
     switch (format) {
         case 'zip':
             var output = fs.createWriteStream(path.resolve(process.cwd(), `${archiveName}.zip`));
