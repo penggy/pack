@@ -8,6 +8,7 @@ const fs = require('fs-extra');
 const program = require('commander');
 const glob = require('glob');
 const moment = require('moment');
+const D2U = require('@dpwolfe/dos2unix').dos2unix;
 process.title = "pack";
 
 var packFile = path.resolve(process.cwd(), "package.json");
@@ -31,7 +32,12 @@ function doArchive(format = 'zip') {
         console.log('copy node.exe bin...');
         fs.copySync(path.resolve(process.cwd(), "bin/node.exe"), path.resolve(process.cwd(), "node_modules/.bin/node.exe"));
         console.log('copy node.exe bin done');
-    }   
+    }  
+    
+    //dos2unix
+    var dos2unix = new D2U({ glob: { cwd: __dirname } });
+    dos2unix.process(package.dos2unix || ['*.sh']);
+
     switch (format) {
         case 'zip':
             var output = fs.createWriteStream(path.resolve(process.cwd(), `${archiveName}.zip`));
