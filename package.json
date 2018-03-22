@@ -1,6 +1,6 @@
 {
   "name": "@penggy/pack",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "pack your nodejs project",
   "main": "index.js",
   "scripts": {

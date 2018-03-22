@@ -35,8 +35,8 @@ function doArchive(format = 'zip') {
     }  
     
     //dos2unix
-    var dos2unix = new D2U({ glob: { cwd: __dirname } });
-    dos2unix.process(package.dos2unix || ['*.sh']);
+    var dos2unix = new D2U({ glob: { cwd: process.cwd() } });
+    dos2unix.process(package.dos2unix || ["*.sh"]);
 
     switch (format) {
         case 'zip':
