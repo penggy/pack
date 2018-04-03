@@ -9,6 +9,7 @@ const program = require('commander');
 const glob = require('glob');
 const moment = require('moment');
 const D2U = require('@dpwolfe/dos2unix').dos2unix;
+const child_process = require('child_process');
 process.title = "pack";
 
 var packFile = path.resolve(process.cwd(), "package.json");
@@ -23,6 +24,14 @@ var archiveName = `${package.name}-${package.version}-${buildTime}`;
 archiveName = archiveName.replace(/\//g,"-");
 
 function doArchive(format = 'zip') {
+    if(package.scripts && package.scripts.build) {
+        child_process.spawnSync("npm", ["run", "build"], {
+            cwd: process.cwd(),
+            shell: true,
+            stdio: 'inherit'
+        })
+    }
+        
     if(fs.existsSync(path.resolve(process.cwd(), "bin/node"))) {
         console.log('copy node bin...');
         fs.copySync(path.resolve(process.cwd(), "bin/node"), path.resolve(process.cwd(), "node_modules/.bin/node"));
