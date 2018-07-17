@@ -1,6 +1,6 @@
 {
   "name": "@penggy/pack",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "pack your nodejs project",
   "main": "index.js",
   "scripts": {
@@ -39,16 +39,33 @@
     "type": "git",
     "url": "https://github.com/penggy/pack"
   },
-  "pack": {
-    "pattern": "**",
-    "options": {
-      "dot": false,
-      "ignore": [
-        "node_modules/**",
-        "*.log",
-        "*.tar.gz",
-        "*.zip"
-      ]
+  "pack": [
+    {
+      "name": "xxx",
+      "pattern": "**",
+      "options": {
+        "dot": true,
+        "ignore": [
+          "node_modules/**",
+          "*.log",
+          "*.tar.gz",
+          "*.zip"
+        ]
+      }
+    },
+    {
+      "name": "yyy",
+      "format": "tar",
+      "pattern": "**",
+      "options": {
+        "dot": false,
+        "ignore": [
+          "node_modules/**",
+          "*.log",
+          "*.tar.gz",
+          "*.zip"
+        ]
+      }
     }
-  }
+  ]
 }

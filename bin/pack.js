@@ -21,39 +21,50 @@ if (!fs.existsSync(packFile)) {
 const package = require(packFile);
 var buildTime = moment().format('YYMMDDHHmm');
 var archiveName = `${package.name}-${package.version}-${buildTime}`;
-archiveName = archiveName.replace(/\//g,"-");
+archiveName = archiveName.replace(/\//g, "-");
 
-function doArchive(format = 'zip') {
-    if(package.scripts && package.scripts.build) {
+function doArchive(pack = {
+    name: package.name,
+    format: 'zip',
+    pattern: '**',
+    options: {
+        dot: false,
+        ignore: ["node_modules{,/**}", "*.log", "*.tar.gz", "*.zip"]
+    }
+}) {
+    if (package.scripts && package.scripts.build) {
         child_process.spawnSync("npm", ["run", "build"], {
             cwd: process.cwd(),
             shell: true,
             stdio: 'inherit'
         })
     }
-        
-    if(fs.existsSync(path.resolve(process.cwd(), "bin/node"))) {
-        console.log('copy node bin...');
-        fs.copySync(path.resolve(process.cwd(), "bin/node"), path.resolve(process.cwd(), "node_modules/.bin/node"));
-        console.log('copy node bin done');
-    }   
-    if(fs.existsSync(path.resolve(process.cwd(), "bin/node.exe"))) {
-        console.log('copy node.exe bin...');
-        fs.copySync(path.resolve(process.cwd(), "bin/node.exe"), path.resolve(process.cwd(), "node_modules/.bin/node.exe"));
-        console.log('copy node.exe bin done');
-    }  
-    
+    var bins = glob.sync("bin/*", {
+        cwd: process.cwd(),
+        absolute: true
+    })
+    for(var bin of bins) {
+        console.log(`copy bin ${bin} ...`)
+        fs.copySync(bin, path.resolve(process.cwd(), `node_modules/.bin/${path.basename(bin)}`));
+    }
+
     //dos2unix
     var dos2unix = new D2U({ glob: { cwd: process.cwd() } });
     dos2unix.process(package.dos2unix || ["*.sh"]);
 
-    switch (format) {
+    var packName = archiveName;
+    if (pack.name) {
+        packName = `${pack.name}-${package.version}-${buildTime}`;
+    }
+    switch (pack.format || 'zip') {
         case 'zip':
-            var output = fs.createWriteStream(path.resolve(process.cwd(), `${archiveName}.zip`));
+            var targetName = `${packName}.zip`;
+            var output = fs.createWriteStream(path.resolve(process.cwd(), targetName));
             var archive = archiver('zip', { zlib: { level: 9 } })
             break;
         case 'tar':
-            var output = fs.createWriteStream(path.resolve(process.cwd(), `${archiveName}.tar.gz`));
+            var targetName = `${packName}.tar.gz`;
+            var output = fs.createWriteStream(path.resolve(process.cwd(), targetName));
             var archive = archiver('tar', { gzip: true });
             break;
         default:
@@ -79,30 +90,20 @@ function doArchive(format = 'zip') {
     })
 
     archive.pipe(output);
-    var globs = [];
-    globs = globs.concat(package.pack || []);
-    if(!globs.length) {
-        globs.push({
-            pattern: "**",
-            options: {
-                dot: false,
-                ignore: ["node_modules{,/**}", "*.log", "*.tar.gz", "*.zip"]
-            }
+    archive.glob(pack.pattern || "**", Object.assign({
+        cwd: process.cwd()
+    }, pack.options || {
+        dot: false,
+        ignore: ["node_modules{,/**}", "*.log", "*.tar.gz", "*.zip"]
+    }), {
+            prefix: packName
         })
-    }
-    for(var _glob of globs) {
-        archive.glob(_glob.pattern, Object.assign({
-            cwd: process.cwd()
-        }, _glob.options), {
-            prefix: archiveName
-        })
-    }
-    console.log(`do ${format} ...`);
+    console.log(`do ${pack.format || 'zip'} ${targetName} ...`);
     archive.finalize();
 }
 
 program.version(require(path.resolve(__dirname, "../package.json")).version)
-    // .option('-F, --format [tar,zip]', 'archive format [tar]', 'tar')
+// .option('-F, --format [tar,zip]', 'archive format [tar]', 'tar')
 
 program.command('clean').description('clean *.zip,*.tar.gz').action(function () {
     var files = glob.sync("{*.zip,*.tar.gz}", {
@@ -121,11 +122,29 @@ program.command('clean').description('clean *.zip,*.tar.gz').action(function () 
 })
 
 program.command('zip').description('make zip archive').action(function() {
-    doArchive('zip');
+    var packs = [];
+    packs = packs.concat(package.pack || []);
+    for(var pack of packs) {
+        if(!pack.format) {
+            pack.format = 'zip';
+        }
+        if(pack.format == 'zip') {
+            doArchive(pack);
+        }
+    }
 })
 
 program.command('tar').description('make tar archive').action(function() {
-    doArchive('tar');
+    var packs = [];
+    packs = packs.concat(package.pack || []);
+    for(var pack of packs) {
+        if(!pack.format) {
+            pack.format = 'tar';
+        }
+        if(pack.format == 'tar') {
+            doArchive(pack);
+        }
+    }
 })
 
 program.command('*', {
@@ -136,8 +155,12 @@ program.command('*', {
 
 program.parse(process.argv);
 
-if(program.args.length == 0) {
-    program.help();
+if (program.args.length == 0) {
+    var packs = [];
+    packs = packs.concat(package.pack || []);
+    for (var pack of packs) {
+        doArchive(pack);
+    }
 }
 
 
