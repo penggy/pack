@@ -42,6 +42,7 @@
   "pack": [
     {
       "name": "xxx",
+      "path": "build",
       "pattern": "**",
       "options": {
         "dot": true,

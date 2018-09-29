@@ -48,6 +48,8 @@ pack 命令从当前工作目录找 package.json 文件, 根据 package.json 配
 
 ```js
   "pack": {
+    "name": "xxx",
+    "path": "build",
     "pattern": "**",
     "options": {
       "dot": false,
