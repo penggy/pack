@@ -56,6 +56,12 @@ function doArchive(pack = {
     if (pack.name) {
         packName = `${pack.name}-${package.version}-${buildTime}`;
     }
+    if (pack.path) {
+        if(!fs.pathExistsSync(pack.path)){
+         fs.mkdirpSync(pack.path);
+        }
+         packName = pack.path + "/" +packName;
+    }
     switch (pack.format || 'zip') {
         case 'zip':
             var targetName = `${packName}.zip`;
