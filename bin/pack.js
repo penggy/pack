@@ -52,6 +52,7 @@ function doArchive(pack = {
     var dos2unix = new D2U({ glob: { cwd: process.cwd() } });
     dos2unix.process(package.dos2unix || ["*.sh"]);
 
+    var packPath = "";
     var packName = archiveName;
     if (pack.name) {
         packName = `${pack.name}-${package.version}-${buildTime}`;
@@ -60,16 +61,16 @@ function doArchive(pack = {
         if(!fs.pathExistsSync(pack.path)){
          fs.mkdirpSync(pack.path);
         }
-         packName = pack.path + "/" +packName;
+        packPath = pack.path + path.sep;
     }
     switch (pack.format || 'zip') {
         case 'zip':
-            var targetName = `${packName}.zip`;
+            var targetName = `${packPath}${packName}.zip`;
             var output = fs.createWriteStream(path.resolve(process.cwd(), targetName));
             var archive = archiver('zip', { zlib: { level: 9 } })
             break;
         case 'tar':
-            var targetName = `${packName}.tar.gz`;
+            var targetName = `${packPath}${packName}.tar.gz`;
             var output = fs.createWriteStream(path.resolve(process.cwd(), targetName));
             var archive = archiver('tar', { gzip: true });
             break;
