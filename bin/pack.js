@@ -91,9 +91,9 @@ function doArchive(pack = {
     }).on('error', function (err) {
         throw err;
     }).on('progress', data => {
-        // process.stdout.clearLine();
-        // process.stdout.cursorTo(0);
-        // process.stdout.write(`${prettyBytes(data.fs.processedBytes)} / ${prettyBytes(data.fs.totalBytes)}`);
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(`${prettyBytes(data.fs.processedBytes)} / ${prettyBytes(data.fs.totalBytes)}`);
     })
 
     archive.pipe(output);
