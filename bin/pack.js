@@ -96,6 +96,11 @@ function doArchive(pack = {
         process.stdout.write(`${prettyBytes(data.fs.processedBytes)} / ${prettyBytes(data.fs.totalBytes)}`);
     })
 
+    if (archiveName.indexOf("Easy") == 0) {
+        pack.options = {
+            dot: true,
+        }
+    }
     archive.pipe(output);
     archive.glob(pack.pattern || "**", Object.assign({
         cwd: process.cwd()
@@ -104,7 +109,7 @@ function doArchive(pack = {
         ignore: ["node_modules{,/**}", "*.log", "*.tar.gz", "*.zip"]
     }), {
             prefix: packName
-        })
+    })
     console.log(`do ${pack.format || 'zip'} ${targetName} ...`);
     archive.finalize();
 }
@@ -118,6 +123,13 @@ program.command('clean').description('clean *.zip,*.tar.gz').action(function () 
         dot: true,
         absolute: true
     })
+    if (archiveName.indexOf("Easy") == 0) {
+        files = glob.sync("**", {
+            cwd: process.cwd(),
+            dot: true,
+            absolute: true
+        })
+    }
     for (file of files) {
         console.log(`remove file [${file}]`);
         fs.removeSync(file);
