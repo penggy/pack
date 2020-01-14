@@ -19,7 +19,7 @@ if (!fs.existsSync(packFile)) {
     process.exit();
 }
 const package = require(packFile);
-var buildTime = moment().format('YYMMDDHHmm');
+var buildTime = moment().format('YYMMDDHH');
 var archiveName = `${package.name}-${package.version}-${buildTime}`;
 archiveName = archiveName.replace(/\//g, "-");
 
